@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Home{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<h3>{{ user.username }}</h3>
+<div>
+    <table class="table">
+      <tr>
+        <th>product</th>
+        <th>message</th>
+      </tr>
+      {% for product in products %}
+      <tr>
+        <td>{{ product.id }}</td>
+        <td>{{ product.message }}</td>
+        <td>
+          <form method="post">
+            <label for="new_message">update message</label>
+            <input name="new_message" id="new_message" required>
+            <input type="hidden" id="prod_id" name="prod_id" value="{{ product.id }}">
+            <input type="submit" value="Update">
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+    <form method="POST">
+      <label for="prod_search">Products</label>
+      <input name="prod_search" id="prod_search" required>
+      <input type="submit" value="search">
+    </form>
+    <table class="table">
+      <tr>
+        <th>order</th>
+        <th>product id</th>
+        <th>customer phone</th>
+        <th>shipped</th>
+      </tr>
+      {% for order in orders %}
+      <tr>
+        <td>{{ order.id }}</td>
+        <td>{{ order.product_id }}</td>
+        <td>{{ order.customer_phone }}</td>
+        <td>{{ order.shipped }}</td>
+        <td>
+          <form method="post">
+            <input type="hidden" id="send_shipped" name="send_shipped" value="{{ order.id }}">
+            <input type="hidden" id="order_id" name="order_id" value="{{ order.id }}">
+            <input type="submit" value="Send">
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+  <h3>Add new product</h3>
+  <form method="post">
+    <label for="message">message</label>
+    <input name="message" id="message" required>
+    <input type="submit" value="Add">
+  </form>
+  <h3>Add new order</h3>
+  <form method="post">
+    <label for="pid">product</label>
+    <input name="pid" id="pid" required>
+    <label for="cust_phone">customer phone</label>
+    <input name="cust_phone" id="cust_phone" required>
+    <input type="submit" value="Add">
+  </form>
+{% endblock %}
