@@ -1,0 +1,80 @@
+<!doctype html>
+<html>
+<title>{% block title %}{% endblock %}</title>
+<head>
+<!-- style sheets -->
+<link rel="stylesheet" href="{{ url_for('static', filename='../app/src/App.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='../app/src/index.css') }}">
+<!-- bootstrap files -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<!-- jquery files -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<!-- js files -->
+<link rel="stylesheet" href="{{ url_for('static', filename='../app/src/App.js') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='../app/src/index.js') }}">
+</head>
+<body style="background-color: whitesmoke; font-family: -apple-system, Roboto', Helvetica Neue', sans-serif;">
+  <nav class="navbar navbar-default">
+    <div class="container-fluid">
+      <ul class="nav navbar-nav">
+        <li><a href="{{ url_for('index') }}">Home</a></li>
+      </ul>
+    </div>
+  </nav>
+  <div class="container">
+    <section class="content">
+      <header>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        {% block header %}{% endblock %}
+      </header>
+      {% for message in get_flashed_messages() %}
+        <div class="flash">{{ message }}</div>
+          <div class="col-sm-4">
+            {% with errors = get_flashed_messages(category_filter=["success"]) %}
+                {% if errors %}
+                    {%- for message in errors %}
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <span>{{ message }}</span>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    {% endfor -%}
+                {% endif %}
+            {% endwith %}
+        </div>
+          <div class="col-sm-4">
+            {% with errors = get_flashed_messages(category_filter=["warning"]) %}
+                {% if errors %}
+                    {%- for message in errors %}
+                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                            <span>{{ message }}</span>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    {% endfor -%}
+                {% endif %}
+            {% endwith %}
+        </div>
+          <div class="col-sm-4"></div>
+            {% with errors = get_flashed_messages(category_filter=["danger"]) %}
+                {% if errors %}
+                    {%- for message in errors %}
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <span>{{ message }}</span>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    {% endfor -%}
+                {% endif %}
+            {% endwith %}
+        </div>
+      {% endfor %}
+      {% block content %}{% endblock %}
+    </section>
+  </div>
+</body>
+</html>

@@ -1,157 +1,99 @@
 """ The main Flask application file that bootstraps and starts the app. """
 
 import os
-from flask import (
-    flash, g, redirect, render_template, request, session, url_for, sessions
-)
-from flask_migrate import Migrate
 from twilio.rest import Client
-
+# from flask_migrate import Migrate
+from flask import flash, g
+from flask import request, render_template, url_for, redirect, session
 from bootstrap import app_factory, database_factory
 
-
+#flask
 app = app_factory()
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
-print(app.config['SECRET_KEY'])
-print(app.config['SQLALCHEMY_DATABASE_URI'])
-with app.app_context():
-    db = app.db
-    db.drop_all()
-    migrate = Migrate(app, db)
+#flask config
+app.config['SECRET_KEY'] = b'_5#y2L"F4Q8z\n\xec]/' 
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://postscript:dev@db/postscript'
 
-
-from models import User, Product, Order
-
-
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        phone = request.form['phone']
-        error = None
-        print(username, password, phone)
-
-        if not username:
-            error = 'Username is required'
-        elif not password:
-            error = 'Password is required'
-
-        user = User.query.filter_by(username=username).first()
-        if user:
-            error = 'User {} already exists'.format(username)
-
-        if error is None:
-            user = User(username=username, password=password, phone=phone)
-            db.session.add(user)
-            db.session.commit()
-
-            session['username'] = username
-            print("user added")
-            return redirect(url_for('login'))
-        flash(error)
-
-    return render_template('registration.html')
-
-
-@app.route('/', methods=['GET', 'POST'])
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        error = None
-        user = User.query.filter_by(username=username).first()
-
-        if user is None:
-            error = 'Incorrect username.'
-        elif password != user.password:
-            error = 'Incorrect password.'
-
-        if error is None:
-            session.clear()
-            session['username'] = username
-            username = session.get('username')
-            if username is None:
-                g.user = None
-            else:
-                g.user = User.query.filter_by(username=username).first()
-            print('logging user')
-            return redirect(url_for('index'))
-
-        flash(error)
-
-    return render_template('login.html')
-
-
-account_sid = os.environ.get("SID")
-auth_token = os.environ.get("AUTH_TOKEN")
-client = Client(account_sid, auth_token)
-twilio_from = os.environ.get('TWILIO_FROM')
+#import tables
+from database import User, Product, Order
+#connect to twilio/might want to add to docker-compose.yml in future
+ACCOUNT_SID = 'ACebc012a717e6ae5de9a0e71a77b66720'
+TWILIO_AUTH_TOKEN = '2f4fa14781f70de5957f1d33b6e32979'
+TWILIO_NUMBER= +18187489426
+client = Client(ACCOUNT_SID, TWILIO_AUTH_TOKEN) 
 
 
 @app.route('/index',  methods=['GET', 'POST'])
 def index():
+
+    username = request.form['username']
+    if not username:
+            error = 'Username is required'
+    
+    user = User.query.filter_by(username=username).first()
+
     username = session.get('username')
     print(username)
-    user = User.query.filter_by(username=username).first()
-    products = Product.query.filter_by(user_id=user.id).all()
+    #query.filters by username from above
+    user = Users.query.filter_by(username=username).first()
+    #products avaible for certain users show
+    products = Products.query.filter_by(user_id=user.id).all()
     print(products)
     orders = []
+
     for prod in products:
-        order = Order.query.filter_by(product_id=prod.id).all()
+        order = Orders.query.filter_by(product_id=prod.id).all()
+        #all orders info (id ,product_id,customer_phone,shipped) added to orders[]
         orders.extend(order)
-        print(order)
 
     if request.method == 'POST':
+         # HTTP Method POST, form was submitted by a user
         if request.form.get('prod_search'):
+            #gets product info from user search
             prod_id = int(request.form.get('prod_search'))
-            products = Product.query.filter_by(id=prod_id).all()
-            orders = Order.query.filter_by(product_id=prod_id)
+            #get products from db for this user
+            products = Products.query.filter_by(id=prod_id).all()
+            #prod_id is matched to product_id from db to get correct product order
+            orders = Orders.query.filter_by(product_id=prod_id)
 
-            return render_template('home.html', user=user, products=products, orders=orders)
+            return render_template('homepage.html', user=user, products=products, orders=orders)
 
+
+        #users add message
         if request.form.get('message'):
-            message = request.form.get('message')
-            add_products(user_id=user.id, message=message)
-        if request.form.get('new_message'):
-            new_message = request.form.get('new_message')
+            new_message = request.form.get('message')
             prod_id = request.form.get('prod_id')
-            prod = Product.query.filter_by(id=prod_id).first()
+            prod = Products.query.filter_by(id=prod_id).first()
             prod.message = new_message
+            products.add(user_id=user.id, message=message)
             db.session.commit()
-        if request.form.get('pid'):
-            prod_id = request.form.get('pid')
-            customer_phone = request.form.get('cust_phone')
-            order = Order(product_id=int(prod_id), customer_phone=customer_phone, shipped=False)
-            db.session.add(order)
-            db.session.commit()
-        if request.form.get('send_shipped'):
+
+        #send notifictaion
+        if request.form.get('notify'):
             order_id = int(request.form.get('order_id'))
-            order = Order.query.filter_by(id=order_id).first()
-            product = Product.query.filter_by(id=order.product_id).first()
-            phone = order.customer_phone
-            try:
-                client.messages.create(
-                    body=product.message,
-                    from_=twilio_from,
-                    to='+1' + phone
-                )
-                flash("Message sent")
-            except Exception as e:
-                flash('Twilio request failed {}'.format(e))
+            order = Orders.query.filter_by(id=order_id, shipped=False).first()
+            product = Products.query.filter_by(id=order.product_id).first()
 
-            order.shipped = True
+            try:
+                #create message
+                client.messages.create(
+                    from_=os.environ.get('TWILIO_NUMBER'),
+                    to='+1' + order.customer_phone,
+                    body=product.message
+                )
+                flash("SMS Notifictaion is now sent! :)", "success")
+            except Exception as e:
+                flash('ERROR: request failed. Try again. :('.format(e), "danger")
+
+            #after sms is sent set order shipped to true
+            order.shipped = True 
             db.session.commit()
 
-    return render_template('home.html', user=user, products=products, orders=orders)
+    return render_template('homepage.html', user=user, products=products, orders=orders)
 
 
-def add_products(user_id, message):
-    product = Product(user_id=user_id, message=message)
-    db.session.add(product)
-    db.session.commit()
-    print("product {} added".format(product))
+@app.route("/health-check")
+def health_check():
+    return {"success": True}
 
 
 if __name__ == "__main__":

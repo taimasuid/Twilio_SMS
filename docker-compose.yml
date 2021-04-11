@@ -24,10 +24,6 @@ services:
       STAGE: dev
       SQLALCHEMY_DATABASE_URI: postgresql+psycopg2://postscript:dev@db/postscript
       SQLALCHEMY_TRACK_MODIFICATIONS: 0
-      SECRET_KEY: b'_5#y2L"F4Q8z\n\xec]/'
-      SID: ACa7e89b468b4306447dcf9052dd375c6b
-      AUTH_TOKEN: 6df75866dbe844d2f1da75416f9ac019
-      TWILIO_FROM: +12058758151
     networks:
       - postscript
     ports:

@@ -1,4 +1,0 @@
-export SECRET_KEY=b'_5#y2L"F4Q8z\n\xec]/'
-export SID=ACa7e89b468b4306447dcf9052dd375c6b
-export AUTH_TOKEN=6df75866dbe844d2f1da75416f9ac019
-export TWILIO_FROM='+12058758151'

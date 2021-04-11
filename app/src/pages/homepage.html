@@ -1,0 +1,63 @@
+{% extends 'index.html' %}
+
+{% block header %}
+  <h1>{% block title %}SMS Notifications{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<div>
+    <input name="username" id="username">
+    <input type="submit" value="Enter">
+    <table class="table">
+      <tr>
+        <th>Product</th>
+        <th>Message</th>
+      </tr>
+      {% for product in products %}
+      <tr>
+        <td>{{ product.id }}</td>
+        <td>{{ product.message }}</td>
+     <form method="POST">
+      <label for="prod_search">Search Products:</label>
+      <!-- must select product to send message -->
+      <input name="prod_search" id="prod_search" required>
+      <input type="submit" value="search">
+    </form>
+        <td>
+          <form method="post">
+            <label for="message">Message:</label>
+            <input name="message" id="message" required>
+            <input type="hidden" id="prod_id" name="prod_id" value="{{ product.id }}">
+            <input type="submit" value="Send">
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+    
+        <!-- view order_id, prod_id, phone, if its shipped, and message-->
+    <table class="table">
+      <tr>
+        <th>order</th>
+        <th>product id</th>
+        <th>customer phone</th>
+        <th>shipped</th>
+      </tr>
+      {% for order in orders %}
+      <tr>
+        <td>{{ order.id }}</td>
+        <td>{{ order.product_id }}</td>
+        <td>{{ order.customer_phone }}</td>
+        <td>{{ order.shipped }}</td>
+        <td>
+          <form method="post">
+            <input type="hidden" id="notify" name="notify" value="{{ order.id }}">
+            <input type="hidden" id="order_id" name="order_id" value="{{ order.id }}">
+            <input type="submit" value="Send">
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+{% endblock %}
