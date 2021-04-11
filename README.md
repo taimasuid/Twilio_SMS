@@ -1,20 +1,3 @@
-# Introduction:
-
-Thanks for continuing your application to Postscript Engineering!
-
-This assignment very closely mimics work we are doing at Postscript - it’s a stripped down version of a core part of our functionality. So it should give you a good sense of whether you want to work at Postscript, and give us a good sense of what it would be like to have you on our team. 
-
-In particular, to do well on this project you’ll probably need to work like we do: follow the [80/20 rule](https://en.wikipedia.org/wiki/Pareto_principle). There are a lot of technologies listed below and we want you to use all of them. You’re probably not familiar with all of them, but you only need to learn enough to get the assignment working. We’re not looking for perfect usage of any tool.
-
-In addition to the code, please send us: 1) an explanation of your solution, 2) a list of the technologies used that were totally new to you, so we can take that into account, 3) roughly how long you took
-
-## Evaluation Criteria:
-
-- Learning & implementing new frameworks / languages 
-- Speed / Resourcefulness 
-- Working within a broad spec / autonomous decision making
-- Quality given the amount of time taken (it would be reasonable to submit a medium-quality solution that you were able to do quickly)
-
 ## Assignment:
 
 Please create a tool that can send shipment notifications as text messages. All of the functionality you create must be exposed through a single front-end interface. It must interact with back-end API’s to perform its functions.
@@ -26,6 +9,14 @@ The main flows to implement are:
 - A user can also look up draft versions of these text messages that have been saved, and click a button to actually send one of them to a number (which they provide at the time of sending).
 
 Additional details under “User Flows.”
+
+## Evaluation Criteria:
+
+- Learning & implementing new frameworks / languages 
+- Speed / Resourcefulness 
+- Working within a broad spec / autonomous decision making
+- Quality given the amount of time taken (it would be reasonable to submit a medium-quality solution that you were able to do quickly)
+
 
 ## Tooling:
 
@@ -86,21 +77,9 @@ Running the environment is now as easy as `docker compose up`.
 - Visit `http://localhost:5000/health-check` to verify the api is working.
 - Visit `http://localhost:3000` to see your frontend application
 
-## Delivery:
+## Comments:
 
-Please do not spend more than 5 hours on this assignment.
-
-Please deliver the assignment in one of the following ways:
-
-- Dropbox (sent to/shared with adam@postscript.io, madelyn@postscript.io, and patrick@postscript.io) 
-- Google Drive (sent to/shared with adam@postscript.io, madelyn@postscript.io, and patrick@postscript.io) 
-- Private Git Repo (shared with madelyneriksen, pkearney06, SpicyBajo) 
-
-GH usernames (if private repo):
-madelyneriksen
-pkearney06
-SpicyBajo
-
+Project not fully completed, clone repo for base then modify as you wish!
 
 
 
